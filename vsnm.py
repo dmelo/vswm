@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import ConfigParser, os, re
 
@@ -13,7 +13,7 @@ def connect_wep(dev, ssid):
     os.system("iwconfig " + dev + " essid '" + ssid + "'")
 
 def connect_wpa(dev, ssid, psk):
-    os.system("wpa_passphrase " + ssid  + " '" + psk + "' > /etc/wpa_supplicant/wpa_supplicant.conf")
+    os.system("wpa_passphrase " + ssid  + " " + psk + " > /etc/wpa_supplicant/wpa_supplicant.conf")
     os.system("wpa_supplicant -d -Dwext  -i " + dev + " -c /etc/wpa_supplicant/wpa_supplicant.conf >& log.txt &")
     os.system("sleep 5")
 
@@ -41,7 +41,7 @@ while 1:
         line = re.sub('"', '', line)
         line = line.replace('\n', '')
         ssid_list.append(line)
-        print line
+        print(line)
 
 
 for entry in config.sections():
@@ -58,11 +58,24 @@ for entry in config.sections():
             connect_wep(dev, ssid)
         elif 'WPA' == protocol:
             psk = config.get(entry, 'psk')
+            print("ssid: " + ssid)
+            print("psk: " + psk)
             connect_wpa(dev, ssid, psk)
         else:
-            print "ERROR: protocol not recognized"
+            print("ERROR: protocol not recognized")
 
-        os.system("dhclient " + dev)
+	net = config.get(entry, 'net')
+	if 'dhcp' == net:
+	    os.system("dhclient " + dev)
+	elif 'static' == net:
+	    address = config.get(entry, 'address')
+	    os.system("ifconfig " + dev + " " + address)
+	    try:
+		os.system("sh " + config.get(entry, 'post-script'))
+	    except ConfigParser.NoOptionError:
+		continue
+		
+
         set_dns(config.get('global', 'dns1'), config.get('global', 'dns2'))
 
-	break;
+        break;

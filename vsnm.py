@@ -4,13 +4,17 @@ import ConfigParser, os, re
 
 def init_wireless(dev):
     os.system('ip link set ' + dev + ' down')
+    os.system("rfkill unblock wifi")
     os.system('killall -9 dhclient')
     os.system('killall -9 wpa_supplicant')
     os.system('ip link set ' + dev + ' up')
     os.system('sleep 1')
 
 def connect_wep(dev, ssid):
+    os.system("ifconfig " + dev + " down")
     os.system("iwconfig " + dev + " essid '" + ssid + "'")
+    os.system("iwconfig " + dev + " ap any")
+    os.system('ip link set ' + dev + ' up')
 
 def connect_wpa(dev, ssid, psk):
     os.system("wpa_passphrase " + ssid  + " " + psk + " > /etc/wpa_supplicant/wpa_supplicant.conf")

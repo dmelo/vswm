@@ -17,8 +17,8 @@ def connect_wep(dev, ssid):
     os.system('ip link set ' + dev + ' up')
 
 def connect_wpa(dev, ssid, psk):
-    os.system("wpa_passphrase " + ssid  + " " + psk + " > /etc/wpa_supplicant/wpa_supplicant.conf")
-    os.system("wpa_supplicant -d -Dwext  -i " + dev + " -c /etc/wpa_supplicant/wpa_supplicant.conf >& log.txt &")
+    os.system("wpa_passphrase '" + ssid  + "' '" + psk + "' > /etc/wpa_supplicant/wpa_supplicant.conf")
+    os.system("wpa_supplicant -d -Dwext  -i " + dev + " -c /etc/wpa_supplicant/wpa_supplicant.conf >& /var/tmp/wpa_supplicant.log &")
     os.system("sleep 5")
 
 def set_dns(dns1, dns2):
@@ -73,13 +73,12 @@ for entry in config.sections():
 	    os.system("dhclient " + dev)
 	elif 'static' == net:
 	    address = config.get(entry, 'address')
-	    os.system("ifconfig " + dev + " " + address)
-	    try:
-		os.system("sh " + config.get(entry, 'post-script'))
-	    except ConfigParser.NoOptionError:
-		continue
-		
-
-        set_dns(config.get('global', 'dns1'), config.get('global', 'dns2'))
-
-        break;
+        gateway = config.get(entry, 'gateway')
+        print("address: " + address)
+        print("gateway: " + gateway)
+        os.system("ifconfig " + dev + " " + address)
+        os.system("route add default gw " + gateway + " " + dev)
+        try:
+            os.system("sh " + config.get(entry, 'post-script'))
+        except ConfigParser.NoOptionError:
+            break

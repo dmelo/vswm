@@ -68,16 +68,16 @@ for entry in config.sections():
         else:
             print("ERROR: protocol not recognized")
 
-	net = config.get(entry, 'net')
-	if 'dhcp' == net:
-	    os.system("dhclient " + dev)
-	elif 'static' == net:
-	    address = config.get(entry, 'address')
-        gateway = config.get(entry, 'gateway')
-        print("address: " + address)
-        print("gateway: " + gateway)
-        os.system("ifconfig " + dev + " " + address)
-        os.system("route add default gw " + gateway + " " + dev)
+        net = config.get(entry, 'net')
+        if 'dhcp' == net:
+            os.system("dhclient " + dev)
+        elif 'static' == net:
+            address = config.get(entry, 'address')
+            gateway = config.get(entry, 'gateway')
+            print("address: " + address)
+            print("gateway: " + gateway)
+            os.system("ifconfig " + dev + " " + address)
+            os.system("route add default gw " + gateway + " " + dev)
         try:
             os.system("sh " + config.get(entry, 'post-script'))
         except ConfigParser.NoOptionError:

@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 
-#    This file is part of VSNM.
+#    This file is part of VSWM.
 #    Copyright (C) 2012  Diogo Oliveira de Melo
 #
-#    VSNM program is free software: you can redistribute it and/or modify
+#    VSWM program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
@@ -46,7 +46,7 @@ def set_dns(dns1, dns2):
 
 
 config = ConfigParser.ConfigParser()
-config.readfp(open('/etc/vsnm.cfg'))
+config.readfp(open('/etc/vswm.cfg'))
 
 dev = config.get('global', 'dev');
 init_wireless(dev)

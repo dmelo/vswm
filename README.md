@@ -1,20 +1,20 @@
-VSNM - Very Simple Network Manager
+VSWM - Very Simple Wireless Manager
 ==================================
 
-As the name suggests it manages the network in a very simplistic way. This 
-version have wifi WPA and WEP, with dhcp and static networks. To use it, just 
-place the vsnm.cfg file at /etc/ and add there your existing networks. When you
-call the script (without any argument) it will scan the available networks and
-connect you to the first available network that appears on the cfg file.
+As the name suggests it manages the wireless network in a very simplistic way.
+This version have wifi WPA and WEP, with dhcp and static networks. To use it,
+just place the vswm.cfg file at /etc/ and add there your existing networks. When
+you call the script (without any argument) it will scan the available networks
+and connect you to the first available network that appears on the cfg file.
 
 
 DOWNLOAD
 --------
 
-VSNM can be found at GitHub
-[https://github.com/dmelo/vsnm](https://github.com/dmelo/vsnm). A ZIP file can
+VSWM can be found at GitHub
+[https://github.com/dmelo/vswm](https://github.com/dmelo/vswm). A ZIP file can
 be found on the link
-[https://github.com/dmelo/vsnm/archive/master.zip](https://github.com/dmelo/vsnm/archive/master.zip). 
+[https://github.com/dmelo/vswm/archive/master.zip](https://github.com/dmelo/vswm/archive/master.zip). 
 Replace `master` with the a version number (e.g.: 0.1) to get an specific
 version.
 
@@ -22,8 +22,8 @@ version.
 INSTALL
 -------
 
-    cp vsnm /usr/local/bin/
-    cp vsnm.cfg /etc/
+    cp vswm /usr/local/bin/
+    cp vswm.cfg /etc/
 
 Make sure `/usr/local/bin` is in your $PATH. Copy the following line into your
 .bashrc file (or /etc/bashrc, or /etc/profile)
@@ -34,15 +34,15 @@ Reload the `.bashrc`
 
     source ~/.bashrc
 
-Finally, edit `/etc/vsnm.cnf` to contain information about your networks.
+Finally, edit `/etc/vswm.cnf` to include information about your networks.
 
 
 USAGE
 -----
 
-    sudo vsnm
+    sudo vswm
 
-It will make the script read the /etc/vsnm.cfg file and connect to an available 
+It will make the script read the /etc/vswm.cfg file and connect to an available 
 network listed there, if any.
 
 
@@ -55,7 +55,7 @@ Written by Diogo Oliveira de Melo ( dmelo87 at gmail dot com ).
 COPYRIGHT
 ---------
 
-VSNM program is free software: you can redistribute it and/or modify
+VSWM program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.

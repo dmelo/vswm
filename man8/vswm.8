@@ -1,0 +1,17 @@
+.\" Manpage for vswm.
+.\" Contact dmelo87@gmail.com to correct errors or typos.
+.TH man 8 "24 Jul 2012" "0.1" "vswm man page"
+.SH NAME
+vswm \- Very Simple Wireless Manager
+.SH SYNOPSIS
+vswm
+.SH DESCRIPTION
+vswm is a network manager for wireless networks. It aims for simplicity. All known networks should be listed on the /etc/vswm.cfg file. vswm will scan all available networks and connect to the first found on the /etc/vswm.cfg. vswm is not a daemon. Once the connection is made, the execution is over and no other change is performed. It is advised to turn off/disable WirelessManager before using vswm, as WirelessManager may override the changed performed by vswm.
+.SH OPTIONS
+The vswm does not take any options
+.SH SEE ALSO
+iwconfig(8), wpa_passphrase(8), dhclient(8)
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Diogo Oliveira de Melo (dmelo87@gmail.com)

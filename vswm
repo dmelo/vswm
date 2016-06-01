@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import ConfigParser, os, re
+import ConfigParser, os, re, json
 
 def init_wireless(dev):
     os.system('ip link set ' + dev + ' down')
@@ -28,31 +28,42 @@ def init_wireless(dev):
     os.system('sleep 1')
 
 def connect_wep(dev, ssid):
+    print("Connecting " + dev + " using WEP to ssid " + ssid);
     os.system("ifconfig " + dev + " down")
     os.system("iwconfig " + dev + " essid '" + ssid + "'")
     os.system("iwconfig " + dev + " ap any")
     os.system('ip link set ' + dev + ' up')
 
 def connect_wpa(dev, ssid, psk):
+    print("Connecting " + dev + " using WPA to ssid " + ssid);
     os.system("wpa_passphrase '" + ssid  + "' '" + psk + "' > /etc/wpa_supplicant/wpa_supplicant.conf")
     os.system("wpa_supplicant -d -Dwext  -i " + dev + " -c /etc/wpa_supplicant/wpa_supplicant.conf >& /var/tmp/wpa_supplicant.log &")
     os.system("sleep 5")
 
-def set_dns(dns1, dns2):
+def set_dns(dnsSection):
+    dnsList = json.loads(dnsSection)
     fd = open('/etc/resolv.conf', 'w')
-    fd.write('nameserver ' + dns1 + '\n')
-    fd.write('nameserver ' + dns2 + '\n')
+    print("Writing dns entries to /etc/resolv.conf:")
+    for dns in dnsList:
+        print("    " + dns)
+        fd.write('nameserver ' + dns + '\n')
+    print
+
     fd.close()
+
+
 
 
 config = ConfigParser.ConfigParser()
 config.readfp(open('/etc/vswm.cfg'))
 
-dev = config.get('global', 'dev');
+
+dev = config.get('global', 'dev')
 init_wireless(dev)
 
 p = os.popen('iwlist ' + dev + ' scan');
 ssid_list = []
+print("List of ESSIDs:")
 while 1:
     line = p.readline()
     if not line:
@@ -62,7 +73,8 @@ while 1:
         line = re.sub('"', '', line)
         line = line.replace('\n', '')
         ssid_list.append(line)
-        print(line)
+        print("   " + line)
+print
 
 
 for entry in config.sections():
@@ -79,14 +91,19 @@ for entry in config.sections():
             connect_wep(dev, ssid)
         elif 'WPA' == protocol:
             psk = config.get(entry, 'psk')
-            print("ssid: " + ssid)
-            print("psk: " + psk)
             connect_wpa(dev, ssid, psk)
         else:
             print("ERROR: protocol not recognized")
+            continue
 
         net = config.get(entry, 'net')
+        try:
+            set_dns(config.get('global', 'dns'))
+        except ConfigParser.NoOptionError as e:
+            print("No dns entry defined on vswm.cfg, moving on...")
+
         if 'dhcp' == net:
+            print("Running dhclient. It may override DNS settings")
             os.system("dhclient " + dev)
         elif 'static' == net:
             address = config.get(entry, 'address')

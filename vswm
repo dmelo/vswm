@@ -25,6 +25,7 @@ def init_wireless(dev):
     os.system('killall -9 dhclient')
     os.system('killall -9 wpa_supplicant')
     os.system('ip link set ' + dev + ' up')
+    os.system('ip addr flush dev ' + dev)
     os.system('sleep 1')
 
 def connect_wep(dev, ssid):

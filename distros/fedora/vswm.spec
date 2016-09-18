@@ -1,5 +1,5 @@
 Name: vswm 
-Version: 0.4
+Version: 0.5
 Release: 1%{?dist}
 Summary: Very Simples Wireless Manager. Allow a simple management of wireless networks.
 Group: System Environment/Base
@@ -7,7 +7,8 @@ License: GPLv3
 URL: http://diogomelo.net/vswm
 Source0: https://github.com/dmelo/vswm/archive/%{version}.zip
 
-Requires: python, rfkill, wpa_supplicant, dhcp-client, wireless-tools
+BuildArch: noarch
+Requires: python3, rfkill, wpa_supplicant, dhcp-client, wireless-tools
 
 %description
 As the name suggests it manages the wireless network in a very simplistic way.
@@ -19,16 +20,18 @@ and connect you to the first available network that appears on the cfg file.
 %prep
 %setup -q
 
+%build
+
 %install
-install -d $RPM_BUILD_ROOT/%{_sbindir}
+install -d $RPM_BUILD_ROOT/%{_bindir}
 install -d $RPM_BUILD_ROOT/%{_sysconfdir}
 install -d $RPM_BUILD_ROOT/%{_mandir}/man8/
-install vswm $RPM_BUILD_ROOT/%{_sbindir}
+install vswm $RPM_BUILD_ROOT/%{_bindir}
 install vswm.cfg $RPM_BUILD_ROOT/%{_sysconfdir}
 install man8/vswm.8 $RPM_BUILD_ROOT/%{_mandir}/man8/
 
 %files
-%{_sbindir}/vswm
+%{_bindir}/vswm
 %{_mandir}/man8/vswm.8*
 
 %config(noreplace) %{_sysconfdir}/vswm.cfg
@@ -36,6 +39,10 @@ install man8/vswm.8 $RPM_BUILD_ROOT/%{_mandir}/man8/
 %license COPYING
 
 %changelog
+* Thu Sep 08 2016 Diogo Oliveira de Melo <dmelo87@gmail.com> 0.5-1
+- Fix license, make both COPYING file and spec file refer to GPLv3
+- Requires python3 specifically
+
 * Tue Aug 23 2016 Diogo Oliveira de Melo <dmelo87@gmail.com> 0.4-1
 - Flush IP address from device, before connecting to network
 

@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os, re, json
+import os, re, json, sys
 from configparser import ConfigParser, NoOptionError
 
 def init_wireless(dev):
@@ -53,12 +53,8 @@ def set_dns(dnsSection):
 
     fd.close()
 
-
-
-
 config = ConfigParser()
 config.readfp(open('/etc/vswm.cfg'))
-
 
 dev = config.get('global', 'dev')
 init_wireless(dev)
@@ -78,13 +74,15 @@ while 1:
         print("   " + line)
 print
 
-
 for entry in config.sections():
     if entry != 'global':
         ssid = config.get(entry, 'ssid')
         try:
             i = ssid_list.index(ssid)
         except ValueError:
+            continue
+
+        if 2 == len(sys.argv) and sys.argv[1] != ssid:
             continue
 
         protocol = config.get(entry, 'protocol')

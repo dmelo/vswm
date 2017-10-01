@@ -40,10 +40,13 @@ Finally, edit `/etc/vswm.cnf` to include information about your networks.
 USAGE
 -----
 
-    sudo vswm
+    sudo vswm [ESSID]
 
 It will make the script read the /etc/vswm.cfg file and connect to an available 
 network listed there, if any.
+
+The optional argument ESSID can be used to determine which AP to connect to.
+Specially useful when more than one known ESSID is in range.
 
 
 AUTHOR

@@ -20,6 +20,17 @@
 import os, re, json, sys
 from configparser import ConfigParser, NoOptionError
 
+class NetworkEntry:
+    ssid = ""
+    ap = ""
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__) and (self.ssid == other.ssid or self.ap == other.ap):
+            return True
+        if isinstance(other, str) and (self.ssid == other or self.ap == other):
+            return True
+        return False
+
 def init_wireless(dev):
     os.system('ip link set ' + dev + ' down')
     os.system("rfkill unblock wifi")
@@ -36,9 +47,12 @@ def connect_wep(dev, ssid):
     os.system("iwconfig " + dev + " ap any")
     os.system('ip link set ' + dev + ' up')
 
-def connect_wpa(dev, ssid, psk):
+def connect_wpa(dev, ssid, psk, ap):
     print("Connecting " + dev + " using WPA to ssid " + ssid);
     os.system("wpa_passphrase '" + ssid  + "' '" + psk + "' > /etc/wpa_supplicant/wpa_supplicant.conf")
+    if (None != ap):
+        os.system("sed -i 's/.*ssid.*/        bssid=%s/g' /etc/wpa_supplicant/wpa_supplicant.conf" % (ap))
+
     os.system("wpa_supplicant -d -Dwext  -i " + dev + " -c /etc/wpa_supplicant/wpa_supplicant.conf >& /var/tmp/wpa_supplicant.log &")
     os.system("sleep 5")
 
@@ -61,28 +75,62 @@ init_wireless(dev)
 
 p = os.popen('iwlist ' + dev + ' scan');
 ssid_list = []
-print("List of ESSIDs:")
+print("List of Networks:")
+
+networkEntry = 0
+
 while 1:
     line = p.readline()
     if not line:
         break;
+
+    if line.find("Address:") != -1:
+        line = re.sub("^ * Cell.*Address: ", "", line)
+        line = line.replace('\n', '')
+        networkEntry = NetworkEntry()
+        networkEntry.ap = line
+
     if line.find("ESSID") != -1:
         line = re.sub("^.*ESSID:", "", line)
         line = re.sub('"', '', line)
         line = line.replace('\n', '')
-        ssid_list.append(line)
-        print("   " + line)
+        networkEntry.ssid = line
+        ssid_list.append(networkEntry)
+        print("    %s %s" % (networkEntry.ap, networkEntry.ssid))
+
+
 print
 
 for entry in config.sections():
     if entry != 'global':
-        ssid = config.get(entry, 'ssid')
         try:
-            i = ssid_list.index(ssid)
+            ssid = config.get(entry, 'ssid')
+        except KeyError:
+            ssid = None
+        except NoOptionError:
+            ssid = None
+
+        try:
+            ap = config.get(entry, 'ap')
+        except KeyError:
+            ap = None
+        except NoOptionError:
+            ap = None
+
+        if None == ssid and None == ap:
+            raise ValueError('Each entry must have ssid OR ap')
+
+        try:
+            if None != ssid:
+                i = ssid_list.index(ssid)
+            if None != ap:
+                i = ssid_list.index(ap)
         except ValueError:
             continue
 
-        if 2 == len(sys.argv) and sys.argv[1] != ssid:
+        print("Willing to connect to %s %s" % (ssid, ap))
+
+        if 2 == len(sys.argv) and sys.argv[1] != ssid and sys.argv[1] != ap:
             continue
 
         protocol = config.get(entry, 'protocol')
@@ -91,7 +139,7 @@ for entry in config.sections():
             connect_wep(dev, ssid)
         elif 'WPA' == protocol:
             psk = config.get(entry, 'psk')
-            connect_wpa(dev, ssid, psk)
+            connect_wpa(dev, ssid, psk, ap)
         else:
             print("ERROR: protocol not recognized")
             continue

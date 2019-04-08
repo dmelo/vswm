@@ -58,15 +58,18 @@ def connect_wpa(dev, ssid, psk, ap):
 
 def set_dns(dnsSection):
     dnsList = json.loads(dnsSection)
-    fd = open('/etc/resolv.conf', 'w')
-    print("Writing dns entries to /etc/resolv.conf:")
-    for dns in dnsList:
-        print("    " + dns)
-        fd.write('nameserver ' + dns + '\n')
-    print
+    try:
+        fd = open('/etc/resolv.conf', 'w')
+        for dns in dnsList:
+            print("    " + dns)
+            fd.write('nameserver ' + dns + '\n')
 
-    fd.close()
+        fd.close()
 
+    except IOError:
+        print("Could not open /etc/resolve.conf file, for writting")
+
+    
 config = ConfigParser()
 config.readfp(open('/etc/vswm.cfg'))
 

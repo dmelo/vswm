@@ -71,7 +71,7 @@ def set_dns(dnsSection):
 
     
 config = ConfigParser()
-config.readfp(open('/etc/vswm.cfg'))
+config.read_file(open('/etc/vswm.cfg'))
 
 dev = config.get('global', 'dev')
 init_wireless(dev)

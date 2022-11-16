@@ -83,23 +83,26 @@ print("List of Networks:")
 networkEntry = 0
 
 while 1:
-    line = p.readline()
-    if not line:
-        break;
+    try:
+        line = p.readline()
+        if not line:
+            break;
 
-    if line.find("Address:") != -1:
-        line = re.sub("^ * Cell.*Address: ", "", line)
-        line = line.replace('\n', '')
-        networkEntry = NetworkEntry()
-        networkEntry.ap = line
+        if line.find("Address:") != -1:
+            line = re.sub("^ * Cell.*Address: ", "", line)
+            line = line.replace('\n', '')
+            networkEntry = NetworkEntry()
+            networkEntry.ap = line
 
-    if line.find("ESSID") != -1:
-        line = re.sub("^.*ESSID:", "", line)
-        line = re.sub('"', '', line)
-        line = line.replace('\n', '')
-        networkEntry.ssid = line
-        ssid_list.append(networkEntry)
-        print("    %s %s" % (networkEntry.ap, networkEntry.ssid))
+        if line.find("ESSID") != -1:
+            line = re.sub("^.*ESSID:", "", line)
+            line = re.sub('"', '', line)
+            line = line.replace('\n', '')
+            networkEntry.ssid = line
+            ssid_list.append(networkEntry)
+            print("    %s %s" % (networkEntry.ap, networkEntry.ssid))
+    except UnicodeDecodeError:
+        pass
 
 
 print
